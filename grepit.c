@@ -7,7 +7,6 @@
 #define TEXT_COLOR_RESET 	"\x1b[0m"
 
 // grepit program: grepit [keyword] [filename] [options]
-
 int main(char argc, char* argv[]){
 
 	FILE *fp = NULL;
@@ -18,8 +17,10 @@ int main(char argc, char* argv[]){
 	char *tokens[1000]; 	// Pointers to each word in a line, up to 1000 words per line
 	size_t length = 0;		// Length of each line, neccessary for memory allocation
 	ssize_t nread;			// Stores the length of each line (in characters, excluding additonal data)
-	int match = 0;
-	int count = 0;
+	int match = 0;			// Flag for for checking if a matching word was found
+	int tokenMatch = 0;		// Flags where in the line the matching word is located
+	int wordCount = 0;		// Word count for each line
+	int lineCount = 1;
 
 
 	// Error checks for command line arguments
@@ -42,11 +43,25 @@ int main(char argc, char* argv[]){
 		token = strtok(temp," ");
         while(token != NULL){
         	if(strcmp(keyword,token)==0){
-        		printf(RED_COLOR_TEXT "MATCH" TEXT_COLOR_RESET "\n");
-        		printf("%s",line);
+        		match = 1;
+        		tokenMatch = wordCount;
         	}
+        	tokens[wordCount] = token;
+        	wordCount++;
         	token = strtok(NULL," ");
         }
+        
+        if(match){
+        	for(int i=0;i<wordCount;i++){
+        	if(tokenMatch == i)
+        		printf(RED_COLOR_TEXT "%s " TEXT_COLOR_RESET,tokens[i]);
+        	else
+        		printf("%s ",tokens[i]);
+        	}
+        	match = 0;
+        }
+        wordCount = 0;
+        lineCount++;
 	}
 
 	free(temp);
